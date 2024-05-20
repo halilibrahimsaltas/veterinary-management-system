@@ -4,8 +4,9 @@ import dev.patika.veterinary.management.system.entities.Customer;
 import org.springframework.data.domain.Page;
 
 
+
 public interface CustomerService {
-    Customer getId(long id);
+    Customer getById(long id);
     Customer save(Customer customer);
     Customer update(Customer customer);
     Page<Customer> cursor(int page, int pageSize);

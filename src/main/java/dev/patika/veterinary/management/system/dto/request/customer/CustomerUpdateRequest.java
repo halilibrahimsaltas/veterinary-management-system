@@ -1,6 +1,5 @@
 package dev.patika.veterinary.management.system.dto.request.customer;
 
-
 import jakarta.validation.constraints.NotNull;
 import lombok.AllArgsConstructor;
 import lombok.Data;
@@ -9,7 +8,10 @@ import lombok.NoArgsConstructor;
 @Data
 @AllArgsConstructor
 @NoArgsConstructor
-public class CustomerSaveRequest {
+public class CustomerUpdateRequest {
+
+    @NotNull
+    private  long id;
 
     @NotNull
     private  String name;
@@ -23,3 +25,4 @@ public class CustomerSaveRequest {
 
     private  String city;
 }
+

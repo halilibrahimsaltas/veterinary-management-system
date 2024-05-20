@@ -8,16 +8,18 @@ import dev.patika.veterinary.management.system.core.result.Result;
 import dev.patika.veterinary.management.system.core.result.ResultData;
 import dev.patika.veterinary.management.system.core.utils.ResultHelper;
 import dev.patika.veterinary.management.system.dto.request.customer.CustomerSaveRequest;
+import dev.patika.veterinary.management.system.dto.request.customer.CustomerUpdateRequest;
+import dev.patika.veterinary.management.system.dto.response.CursorResponse;
 import dev.patika.veterinary.management.system.dto.response.customer.CustomerResponse;
 import dev.patika.veterinary.management.system.entities.Customer;
 import jakarta.validation.Valid;
+import org.springframework.data.domain.Page;
 import org.springframework.http.HttpStatus;
 import org.springframework.web.bind.annotation.*;
 
 @RestController
 @RequestMapping("/v1/customers")
 public class CustomerController {
-
 
     private  final ModelMapperService modelMapperService;
 
@@ -42,6 +44,33 @@ public class CustomerController {
     public Result delete(@PathVariable ("id") long id){
         this.customerService.delete(id);
         return ResultHelper.successResult();
+    }
+    @GetMapping()
+    @ResponseStatus(HttpStatus.OK)
+    public ResultData<CursorResponse<CustomerResponse>> cursor(
+            @RequestParam(name= "page", required = false, defaultValue = "0") int page,
+            @RequestParam(name = "pageSize",required = false,defaultValue = "10") int pageSize
+    )
+    {
+        Page<Customer> customerPage = this.customerService.cursor(page, pageSize);
+        Page<CustomerResponse> customerResponsePage = customerPage
+                .map(customer -> this.modelMapperService.forResponse().map(customer, CustomerResponse.class));
+
+        return ResultHelper.cursor(customerResponsePage);
+    }
+
+    @GetMapping("/{id}")
+    @ResponseStatus(HttpStatus.OK)
+    public  ResultData<CustomerResponse> get (@PathVariable("id") long id){
+        Customer customer= this.customerService.getById(id);
+        return ResultHelper.success(this.modelMapperService.forResponse().map(customer,CustomerResponse.class));
+    }
+    @PutMapping()
+    @ResponseStatus(HttpStatus.OK)
+    public ResultData<CustomerResponse> update (@Valid @RequestBody CustomerUpdateRequest customerUpdateRequest){
+        Customer updateCustomer= this.modelMapperService.forRequest().map(customerUpdateRequest,Customer.class);
+        this.customerService.update(updateCustomer);
+        return ResultHelper.success(this.modelMapperService.forResponse().map(updateCustomer,CustomerResponse.class));
     }
 
 

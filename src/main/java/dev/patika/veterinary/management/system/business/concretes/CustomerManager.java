@@ -1,10 +1,13 @@
 package dev.patika.veterinary.management.system.business.concretes;
 
 import dev.patika.veterinary.management.system.business.abstracts.CustomerService;
+import dev.patika.veterinary.management.system.core.exception.NotFoundException;
 import dev.patika.veterinary.management.system.dao.CustomerRepo;
 import dev.patika.veterinary.management.system.entities.Customer;
-import org.springframework.data.crossstore.ChangeSetPersister;
+import dev.patika.veterinary.management.system.core.utils.Msg;
 import org.springframework.data.domain.Page;
+import org.springframework.data.domain.PageRequest;
+import org.springframework.data.domain.Pageable;
 import org.springframework.stereotype.Service;
 
 @Service
@@ -17,14 +20,9 @@ public class CustomerManager  implements CustomerService {
     }
 
     @Override
-    public Customer getId(long id) {
-        return null;
-                /*this.customerRepo.findById(id).orElseThrow(() -> new ChangeSetPersister.NotFoundException(Msg.NOT_FOUND));
-
-                 */
+    public Customer getById(long id) {
+        return this.customerRepo.findById(id).orElseThrow(() -> new NotFoundException(Msg.NOT_FOUND));
     }
-
-
 
     @Override
     public Customer save(Customer customer) {
@@ -33,16 +31,21 @@ public class CustomerManager  implements CustomerService {
 
     @Override
     public Customer update(Customer customer) {
-        return null;
+        this.getById(customer.getId());
+        return this.customerRepo.save(customer);
     }
 
     @Override
     public Page<Customer> cursor(int page, int pageSize) {
-        return null;
+        Pageable pageable = PageRequest.of(page,pageSize);
+        return this.customerRepo.findAll(pageable);
     }
 
     @Override
     public boolean delete(long id) {
-        return false;
+        Customer customer= this.getById(id);
+        this.customerRepo.delete(customer);
+        return true;
     }
+
 }

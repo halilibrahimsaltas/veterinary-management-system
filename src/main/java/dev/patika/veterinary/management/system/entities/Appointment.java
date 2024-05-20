@@ -28,7 +28,8 @@ public class Appointment {
 
     @ManyToMany(mappedBy = "appointmentList",cascade = CascadeType.REMOVE)
     @JsonIgnore
-    private List<Animal> bookList;
+    private List<Animal> animalList;
+
     @ManyToMany(mappedBy = "appointmentsList",cascade = CascadeType.REMOVE)
     @JsonIgnore
     private List<Doctor> doctorList;
