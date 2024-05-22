@@ -6,16 +6,21 @@ import dev.patika.veterinary.management.system.business.concretes.CustomerManage
 import dev.patika.veterinary.management.system.core.config.modelMapper.ModelMapperService;
 import dev.patika.veterinary.management.system.core.result.Result;
 import dev.patika.veterinary.management.system.core.result.ResultData;
+import dev.patika.veterinary.management.system.core.utils.Msg;
 import dev.patika.veterinary.management.system.core.utils.ResultHelper;
 import dev.patika.veterinary.management.system.dto.request.customer.CustomerSaveRequest;
 import dev.patika.veterinary.management.system.dto.request.customer.CustomerUpdateRequest;
 import dev.patika.veterinary.management.system.dto.response.CursorResponse;
+import dev.patika.veterinary.management.system.dto.response.animal.AnimalResponse;
 import dev.patika.veterinary.management.system.dto.response.customer.CustomerResponse;
+import dev.patika.veterinary.management.system.entities.Animal;
 import dev.patika.veterinary.management.system.entities.Customer;
 import jakarta.validation.Valid;
 import org.springframework.data.domain.Page;
 import org.springframework.http.HttpStatus;
 import org.springframework.web.bind.annotation.*;
+
+import java.util.List;
 
 @RestController
 @RequestMapping("/v1/customers")
@@ -42,8 +47,12 @@ public class CustomerController {
     @DeleteMapping("/{id}")
     @ResponseStatus(HttpStatus.OK)
     public Result delete(@PathVariable ("id") long id){
-        this.customerService.delete(id);
-        return ResultHelper.successResult();
+        boolean isDeleted = this.customerService.delete(id);
+        if (isDeleted) {
+            return ResultHelper.successResult();
+        } else {
+            return ResultHelper.notFoundError(Msg.NOT_FOUND);
+        }
     }
     @GetMapping()
     @ResponseStatus(HttpStatus.OK)
@@ -73,5 +82,10 @@ public class CustomerController {
         return ResultHelper.success(this.modelMapperService.forResponse().map(updateCustomer,CustomerResponse.class));
     }
 
-
+    @GetMapping("/filter")
+    public ResultData<List<CustomerResponse>> filterCustomersByName(@RequestParam String name) {
+        List<Customer> customers = customerService.filterCustomersByName(name);
+        List<CustomerResponse> customerResponses = customers.stream().map(customer -> modelMapperService.forResponse().map(customer, CustomerResponse.class)).toList();
+        return ResultHelper.success(customerResponses);
+    }
 }

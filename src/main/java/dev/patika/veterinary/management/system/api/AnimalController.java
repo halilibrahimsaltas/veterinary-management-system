@@ -4,6 +4,7 @@ import dev.patika.veterinary.management.system.business.abstracts.AnimalService;
 import dev.patika.veterinary.management.system.core.config.modelMapper.ModelMapperService;
 import dev.patika.veterinary.management.system.core.result.Result;
 import dev.patika.veterinary.management.system.core.result.ResultData;
+import dev.patika.veterinary.management.system.core.utils.Msg;
 import dev.patika.veterinary.management.system.core.utils.ResultHelper;
 import dev.patika.veterinary.management.system.dto.request.animal.AnimalSaveRequest;
 import dev.patika.veterinary.management.system.dto.request.animal.AnimalUpdateRequest;
@@ -14,6 +15,8 @@ import jakarta.validation.Valid;
 import org.springframework.data.domain.Page;
 import org.springframework.http.HttpStatus;
 import org.springframework.web.bind.annotation.*;
+
+import java.util.List;
 
 @RestController
 @RequestMapping("/v1/animals")
@@ -32,7 +35,6 @@ public class AnimalController {
     @ResponseStatus(HttpStatus.CREATED)
     public ResultData<AnimalResponse> save (@Valid @RequestBody AnimalSaveRequest animalSaveRequest){
         Animal saveAnimal= this.modelMapperService.forRequest().map(animalSaveRequest,Animal.class);
-
         this.animalService.save(saveAnimal);
         return ResultHelper.created(this.modelMapperService.forResponse().map(saveAnimal,AnimalResponse.class));
     }
@@ -40,8 +42,12 @@ public class AnimalController {
     @DeleteMapping("/{id}")
     @ResponseStatus(HttpStatus.OK)
     public Result delete(@PathVariable ("id") long id){
-        this.animalService.delete(id);
-        return ResultHelper.successResult();
+        boolean isDeleted =this.animalService.delete(id);
+        if (isDeleted) {
+            return ResultHelper.successResult();
+        } else {
+            return ResultHelper.notFoundError(Msg.NOT_FOUND);
+        }
     }
 
     @GetMapping()
@@ -63,6 +69,11 @@ public class AnimalController {
         Animal animal= this.animalService.getById(id);
         return ResultHelper.success(this.modelMapperService.forResponse().map(animal,AnimalResponse.class));
     }
+    @GetMapping
+    @ResponseStatus(HttpStatus.OK)
+    public List<Animal> getAllAnimals() {
+        return animalService.getAllAnimals();
+    }
     @PutMapping()
     @ResponseStatus(HttpStatus.OK)
     public ResultData<AnimalResponse> update (@Valid @RequestBody AnimalUpdateRequest animalUpdateRequest){
@@ -70,6 +81,22 @@ public class AnimalController {
         this.animalService.update(updateAnimal);
         return ResultHelper.success(this.modelMapperService.forResponse().map(updateAnimal,AnimalResponse.class));
     }
+    @GetMapping("/byOwner/{customerId}")
+    @ResponseStatus(HttpStatus.OK)
+    public ResultData<List<AnimalResponse>> getAnimalsByOwnerId(@PathVariable long customerId) {
+        List<Animal> animals = animalService.findByCustomerId(customerId);
+        return ResultHelper.success(animals.stream().map(animal -> modelMapperService.forResponse().map(animal, AnimalResponse.class)).toList());
+    }
+
+    @GetMapping("/filter")
+    @ResponseStatus(HttpStatus.OK)
+    public ResultData<List<AnimalResponse>> filterAnimalsByName(@RequestParam String name) {
+        List<Animal> animals = animalService.filterAnimalsByName(name);
+        List<AnimalResponse> animalResponses = animals.stream().map(animal -> modelMapperService.forResponse().map(animal, AnimalResponse.class)).toList();
+        return ResultHelper.success(animalResponses);
+    }
+
+
 
 
 }

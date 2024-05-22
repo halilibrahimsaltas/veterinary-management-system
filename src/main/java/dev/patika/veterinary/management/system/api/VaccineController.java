@@ -10,14 +10,22 @@ import dev.patika.veterinary.management.system.dto.request.doctor.DoctorUpdateRe
 import dev.patika.veterinary.management.system.dto.request.vaccine.VaccineSaveRequest;
 import dev.patika.veterinary.management.system.dto.request.vaccine.VaccineUpdateRequest;
 import dev.patika.veterinary.management.system.dto.response.CursorResponse;
+import dev.patika.veterinary.management.system.dto.response.animal.AnimalResponse;
+import dev.patika.veterinary.management.system.dto.response.appointment.AppointmentResponse;
 import dev.patika.veterinary.management.system.dto.response.doctor.DoctorResponse;
 import dev.patika.veterinary.management.system.dto.response.vaccine.VaccineResponse;
+import dev.patika.veterinary.management.system.entities.Animal;
+import dev.patika.veterinary.management.system.entities.Appointment;
 import dev.patika.veterinary.management.system.entities.Doctor;
 import dev.patika.veterinary.management.system.entities.Vaccine;
 import jakarta.validation.Valid;
 import org.springframework.data.domain.Page;
 import org.springframework.http.HttpStatus;
 import org.springframework.web.bind.annotation.*;
+
+import java.time.LocalDate;
+import java.time.LocalDateTime;
+import java.util.List;
 
 @RestController
 @RequestMapping("/v1/vaccines")
@@ -74,5 +82,22 @@ public class VaccineController {
         Vaccine updateVaccine= this.modelMapperService.forRequest().map(vaccineUpdateRequest,Vaccine.class);
         this.vaccineService.update(updateVaccine);
         return ResultHelper.success(this.modelMapperService.forResponse().map(updateVaccine,VaccineResponse.class));
+    }
+
+
+    @GetMapping("/animal/{animalId}")
+    @ResponseStatus(HttpStatus.OK)
+    public ResultData<List<VaccineResponse>> getVaccinesByAnimalId(@PathVariable long animalId) {
+        List<Vaccine> vaccines = vaccineService.getVaccinesByAnimalId(animalId);
+        return ResultHelper.success(vaccines.stream().map(vaccine -> modelMapperService.forResponse().map(vaccine, VaccineResponse.class)).toList());
+    }
+
+    @GetMapping("/expiring")
+    @ResponseStatus(HttpStatus.OK)
+    public ResultData<List<VaccineResponse>> getVaccinesByProtectionFinishDateRange
+            (@RequestParam LocalDate startDate, @RequestParam LocalDate endDate) {
+        List<Vaccine> vaccines = vaccineService.getVaccinesByProtectionFinishDateRange(startDate, endDate);
+        List<VaccineResponse> vaccineResponses = vaccines.stream().map(vaccine -> modelMapperService.forResponse().map(vaccine, VaccineResponse.class)).toList();
+        return ResultHelper.success(vaccineResponses);
     }
 }

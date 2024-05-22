@@ -3,6 +3,7 @@ package dev.patika.veterinary.management.system.business.concretes;
 
 import dev.patika.veterinary.management.system.business.abstracts.VaccineService;
 import dev.patika.veterinary.management.system.core.exception.NotFoundException;
+import dev.patika.veterinary.management.system.core.exception.VaccineException;
 import dev.patika.veterinary.management.system.core.utils.Msg;
 import dev.patika.veterinary.management.system.dao.VaccineRepo;
 import dev.patika.veterinary.management.system.entities.Doctor;
@@ -11,6 +12,9 @@ import org.springframework.data.domain.Page;
 import org.springframework.data.domain.PageRequest;
 import org.springframework.data.domain.Pageable;
 import org.springframework.stereotype.Service;
+
+import java.time.LocalDate;
+import java.util.List;
 
 @Service
 public class VaccineManager implements VaccineService {
@@ -27,8 +31,30 @@ public class VaccineManager implements VaccineService {
     }
 
     @Override
-    public Vaccine save(Vaccine vaccine) {
-        return this. vaccineRepo.save(vaccine);
+    public Vaccine save(Vaccine vaccine) throws VaccineException{
+        List<Vaccine> existingVaccines = vaccineRepo.findByAnimalId(vaccine.getAnimal().getId());
+        for (Vaccine v : existingVaccines) {
+            if (v.getName().equals(vaccine.getName()) && v.getCode().equals(vaccine.getCode()) &&
+                    v.getProtectionFinishDate().isAfter(LocalDate.now())) {
+                throw new VaccineException("A similar vaccine is still in effect.");
+            }
+        }
+        return vaccineRepo.save(vaccine);
+    }
+
+    @Override
+    public List<Vaccine> getAllVaccines() {
+        return vaccineRepo.findAll();
+    }
+
+    @Override
+    public List<Vaccine> getVaccinesByAnimalId(Long animalId) {
+        return vaccineRepo.findByAnimalId(animalId);
+    }
+
+    @Override
+    public List<Vaccine> getVaccinesByProtectionFinishDateRange(LocalDate startDate, LocalDate endDate) {
+        return vaccineRepo.findByProtectionFinishDateBetween(startDate, endDate);
     }
 
     @Override

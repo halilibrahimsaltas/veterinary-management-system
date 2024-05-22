@@ -8,6 +8,7 @@ import lombok.Data;
 import lombok.NoArgsConstructor;
 
 import java.time.LocalDate;
+import java.time.LocalDateTime;
 import java.util.List;
 
 @Entity
@@ -24,15 +25,19 @@ public class Appointment {
 
     @Column(name ="appointment_date")
     @NotNull
-    private LocalDate appointmentDate;
+    private LocalDateTime appointmentDate;
 
-    @ManyToMany(mappedBy = "appointmentList",cascade = CascadeType.REMOVE)
-    @JsonIgnore
-    private List<Animal> animalList;
+    @ManyToOne(fetch = FetchType.LAZY,cascade = CascadeType.MERGE)
+    @JoinColumn(name = "animal_id")
+    private Animal animal;
 
-    @ManyToMany(mappedBy = "appointmentsList",cascade = CascadeType.REMOVE)
-    @JsonIgnore
-    private List<Doctor> doctorList;
+    @ManyToOne(fetch = FetchType.LAZY,cascade = CascadeType.MERGE)
+    @JoinColumn(name = "customer_id")
+    private Customer customer;
+
+    @ManyToOne(fetch = FetchType.LAZY,cascade = CascadeType.MERGE)
+    @JoinColumn(name = "doctor_id")
+    private Doctor doctor;
 
 
     @ManyToOne(fetch = FetchType.LAZY,cascade = CascadeType.MERGE)

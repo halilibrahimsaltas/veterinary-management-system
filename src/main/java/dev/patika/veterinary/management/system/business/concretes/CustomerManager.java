@@ -10,6 +10,8 @@ import org.springframework.data.domain.PageRequest;
 import org.springframework.data.domain.Pageable;
 import org.springframework.stereotype.Service;
 
+import java.util.List;
+
 @Service
 public class CustomerManager  implements CustomerService {
 
@@ -33,6 +35,16 @@ public class CustomerManager  implements CustomerService {
     public Customer update(Customer customer) {
         this.getById(customer.getId());
         return this.customerRepo.save(customer);
+    }
+
+    @Override
+    public List<Customer> getAllCustomers() {
+        return customerRepo.findAll();
+    }
+
+    @Override
+    public List<Customer> filterCustomersByName(String name) {
+        return customerRepo.findByNameContaining(name);
     }
 
     @Override

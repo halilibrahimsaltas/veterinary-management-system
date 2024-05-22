@@ -2,8 +2,10 @@ package dev.patika.veterinary.management.system.api;
 
 import dev.patika.veterinary.management.system.business.abstracts.AppointmentService;
 import dev.patika.veterinary.management.system.core.config.modelMapper.ModelMapperService;
+import dev.patika.veterinary.management.system.core.exception.AppointmentException;
 import dev.patika.veterinary.management.system.core.result.Result;
 import dev.patika.veterinary.management.system.core.result.ResultData;
+import dev.patika.veterinary.management.system.core.utils.Msg;
 import dev.patika.veterinary.management.system.core.utils.ResultHelper;
 import dev.patika.veterinary.management.system.dto.request.appointment.AppointmentSaveRequest;
 import dev.patika.veterinary.management.system.dto.request.appointment.AppointmentUpdateRequest;
@@ -20,6 +22,10 @@ import org.springframework.data.domain.PageRequest;
 import org.springframework.http.HttpStatus;
 import org.springframework.web.bind.annotation.*;
 
+import java.time.LocalDate;
+import java.time.LocalDateTime;
+import java.util.List;
+
 @RestController
 @RequestMapping("/v1/appointments")
 public class AppointmentController {
@@ -33,19 +39,29 @@ public class AppointmentController {
         this.modelMapperService = modelMapperService;
     }
 
-    @PostMapping()
+    @PostMapping
     @ResponseStatus(HttpStatus.CREATED)
-    public ResultData<AppointmentResponse> save (@Valid @RequestBody AppointmentSaveRequest appointmentSaveRequest){
-        Appointment saveAppointment= this.modelMapperService.forRequest().map(appointmentSaveRequest,Appointment.class);
+    public ResultData<AppointmentResponse> save(@Valid @RequestBody AppointmentSaveRequest appointmentSaveRequest) {
+        Appointment appointmentToSave = modelMapperService.forRequest().map(appointmentSaveRequest, Appointment.class);
 
-        this.appointmentService.save(saveAppointment);
-        return ResultHelper.created(this.modelMapperService.forResponse().map(saveAppointment,AppointmentResponse.class));
+        // Check if the doctor is available at the requested time
+        if (!appointmentService.isDoctorAvailable(appointmentToSave.getDoctor(), appointmentToSave.getAppointmentDate())) {
+            throw new AppointmentException("The doctor is not available at the requested time.");
+        }
+
+        Appointment savedAppointment = appointmentService.save(appointmentToSave);
+        return ResultHelper.created(modelMapperService.forResponse().map(savedAppointment, AppointmentResponse.class));
     }
+
     @DeleteMapping("/{id}")
     @ResponseStatus(HttpStatus.OK)
     public Result delete(@PathVariable ("id") long id){
-        this.appointmentService.delete(id);
-        return ResultHelper.successResult();
+        boolean isDeleted =this.appointmentService.delete(id);
+        if (isDeleted) {
+            return ResultHelper.successResult();
+        } else {
+            return ResultHelper.notFoundError(Msg.NOT_FOUND);
+        }
     }
 
     @GetMapping()
@@ -68,12 +84,35 @@ public class AppointmentController {
         Appointment appointment= this.appointmentService.getById(id);
         return ResultHelper.success(this.modelMapperService.forResponse().map(appointment,AppointmentResponse.class));
     }
-    @PutMapping()
+    @PutMapping
     @ResponseStatus(HttpStatus.OK)
-    public ResultData<AppointmentResponse> update (@Valid @RequestBody AppointmentUpdateRequest appointmentUpdateRequest){
-        Appointment updateAppointment= this.modelMapperService.forRequest().map(appointmentUpdateRequest,Appointment.class);
-        this.appointmentService.update(updateAppointment);
-        return ResultHelper.success(this.modelMapperService.forResponse().map(updateAppointment,AppointmentResponse.class));
+    public ResultData<AppointmentResponse> update(@Valid @RequestBody AppointmentUpdateRequest appointmentUpdateRequest) {
+        Appointment appointmentToUpdate = modelMapperService.forRequest().map(appointmentUpdateRequest, Appointment.class);
+
+        // Check if the doctor is available at the requested time
+        if (!appointmentService.isDoctorAvailable(appointmentToUpdate.getDoctor(), appointmentToUpdate.getAppointmentDate())) {
+            throw new AppointmentException("The doctor is not available at the requested time.");
+        }
+
+        Appointment updatedAppointment = appointmentService.update(appointmentToUpdate);
+        return ResultHelper.success(modelMapperService.forResponse().map(updatedAppointment, AppointmentResponse.class));
+    }
+    @GetMapping("/byDateRangeAndDoctor")
+    @ResponseStatus(HttpStatus.OK)
+    public ResultData<List<AppointmentResponse>> getAppointmentsByDateRangeAndDoctor(
+            @RequestParam LocalDateTime startDate, @RequestParam LocalDateTime endDate, @RequestParam Long doctorId) {
+        List<Appointment> appointments = appointmentService.getAppointmentsByDateRangeAndDoctor(startDate, endDate, doctorId);
+        List<AppointmentResponse> appointmentResponses= appointments.stream().map(appointment -> modelMapperService.forResponse().map(appointment, AppointmentResponse.class)).toList();
+        return ResultHelper.success(appointmentResponses);
+    }
+
+    @GetMapping("/byDateRangeAndAnimal")
+    @ResponseStatus(HttpStatus.OK)
+    public ResultData<List<AppointmentResponse>> getAppointmentsByDateRangeAndAnimal(
+            @RequestParam LocalDateTime startDate, @RequestParam LocalDateTime endDate, @RequestParam Long animalId) {
+        List<Appointment> appointments = appointmentService.getAppointmentsByDateRangeAndAnimal(startDate, endDate, animalId);
+        List<AppointmentResponse> appointmentResponses = appointments.stream().map(appointment -> modelMapperService.forResponse().map(appointment, AppointmentResponse.class)).toList();
+        return ResultHelper.success(appointmentResponses);
     }
 
 }

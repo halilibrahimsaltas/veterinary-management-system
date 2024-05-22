@@ -1,6 +1,7 @@
 package dev.patika.veterinary.management.system.entities;
 
 
+import com.fasterxml.jackson.annotation.JsonIgnore;
 import jakarta.persistence.*;
 import jakarta.validation.constraints.NotNull;
 import lombok.AllArgsConstructor;
@@ -55,13 +56,8 @@ public class Animal {
     )
     private List<Appointment> appointmentList;
 
-
-    @ManyToMany(fetch = FetchType.LAZY, cascade = CascadeType.REMOVE)
-    @JoinTable(
-            name = "animal2vac",
-            joinColumns = {@JoinColumn(name = "animal2vac_animal_id")},
-            inverseJoinColumns = {@JoinColumn(name = "animal2vac_vaccine_id")}
-    )
+    @OneToMany(mappedBy = "animal", fetch = FetchType.LAZY, cascade = CascadeType.REMOVE)
+    @JsonIgnore
     private List<Vaccine> vaccineList;
 
 }
