@@ -1,5 +1,6 @@
 package dev.patika.veterinary.management.system.entities;
 
+import com.fasterxml.jackson.annotation.JsonIgnore;
 import jakarta.persistence.*;
 import jakarta.validation.constraints.NotNull;
 import lombok.AllArgsConstructor;
@@ -14,10 +15,11 @@ import java.util.List;
 @AllArgsConstructor
 @NoArgsConstructor
 public class Doctor {
+
     @Id
     @GeneratedValue(strategy = GenerationType.IDENTITY)
     @Column(name="doctor_id",columnDefinition = "serial")
-    private long id;
+    private Long id;
 
     @Column(name ="doctor_name")
     @NotNull
@@ -32,22 +34,13 @@ public class Doctor {
     @Column(name ="doctor_city")
     private  String city;
 
-    @ManyToMany(fetch = FetchType.LAZY,cascade = CascadeType.REMOVE)
-    @JoinTable(
-            name = "doctor2appointment",
-            joinColumns = {@JoinColumn(name = "doctor2appointment_doctor_id")},
-            inverseJoinColumns = {@JoinColumn (name= "doctor2appointment_appointment_id")}
-    )
-    private List<Appointment> appointmentsList;
+    @OneToMany(mappedBy = "doctor", fetch = FetchType.LAZY, cascade = CascadeType.REMOVE)
+    @JsonIgnore
+    private List<Appointment> appointments;
 
-
-    @ManyToMany(fetch = FetchType.LAZY,cascade = CascadeType.REMOVE)
-    @JoinTable(
-            name = "doctor2date",
-            joinColumns = {@JoinColumn(name = "doctor2date_doctor_id")},
-            inverseJoinColumns = {@JoinColumn (name= "doctor2date_availableDate_id")}
-    )
-    private List<AvailableDate> availableDateList;
+    @OneToMany(mappedBy = "doctor", fetch = FetchType.LAZY, cascade = CascadeType.REMOVE)
+    @JsonIgnore
+    private List<AvailableDate> availableDates;
 
 
 

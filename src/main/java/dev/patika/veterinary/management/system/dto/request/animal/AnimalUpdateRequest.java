@@ -11,7 +11,7 @@ import java.time.LocalDate;
 @NoArgsConstructor
 public class AnimalUpdateRequest {
     @NotNull
-    private  long id;
+    private  Long id;
 
     @NotNull
     private  String name;

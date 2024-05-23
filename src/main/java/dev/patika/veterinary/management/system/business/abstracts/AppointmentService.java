@@ -13,8 +13,6 @@ public interface AppointmentService {
     Appointment getById(long id);
     Appointment save(Appointment appointment);
 
-    List<Appointment> getAllAppointments();
-
     List<Appointment> getAppointmentsByDateRangeAndDoctor(LocalDateTime startDate, LocalDateTime endDate, long doctorId );
 
     List<Appointment> getAppointmentsByDateRangeAndAnimal(LocalDateTime startDate, LocalDateTime endDate, long animalId);

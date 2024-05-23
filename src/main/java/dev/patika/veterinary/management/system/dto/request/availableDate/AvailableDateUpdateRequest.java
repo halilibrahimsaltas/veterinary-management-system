@@ -15,7 +15,7 @@ import java.time.LocalDate;
 public class AvailableDateUpdateRequest {
 
     @NotNull
-    private long id;
+    private Long id;
 
     @NotNull
     private LocalDate availableDate;

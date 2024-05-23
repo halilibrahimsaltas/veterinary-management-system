@@ -100,7 +100,7 @@ public class AppointmentController {
     @GetMapping("/byDateRangeAndDoctor")
     @ResponseStatus(HttpStatus.OK)
     public ResultData<List<AppointmentResponse>> getAppointmentsByDateRangeAndDoctor(
-            @RequestParam LocalDateTime startDate, @RequestParam LocalDateTime endDate, @RequestParam Long doctorId) {
+            @RequestParam LocalDateTime startDate, @RequestParam LocalDateTime endDate, @RequestParam long doctorId) {
         List<Appointment> appointments = appointmentService.getAppointmentsByDateRangeAndDoctor(startDate, endDate, doctorId);
         List<AppointmentResponse> appointmentResponses= appointments.stream().map(appointment -> modelMapperService.forResponse().map(appointment, AppointmentResponse.class)).toList();
         return ResultHelper.success(appointmentResponses);
@@ -109,7 +109,7 @@ public class AppointmentController {
     @GetMapping("/byDateRangeAndAnimal")
     @ResponseStatus(HttpStatus.OK)
     public ResultData<List<AppointmentResponse>> getAppointmentsByDateRangeAndAnimal(
-            @RequestParam LocalDateTime startDate, @RequestParam LocalDateTime endDate, @RequestParam Long animalId) {
+            @RequestParam LocalDateTime startDate, @RequestParam LocalDateTime endDate, @RequestParam long animalId) {
         List<Appointment> appointments = appointmentService.getAppointmentsByDateRangeAndAnimal(startDate, endDate, animalId);
         List<AppointmentResponse> appointmentResponses = appointments.stream().map(appointment -> modelMapperService.forResponse().map(appointment, AppointmentResponse.class)).toList();
         return ResultHelper.success(appointmentResponses);

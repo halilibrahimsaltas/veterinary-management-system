@@ -12,7 +12,7 @@ import java.time.LocalDate;
 @NoArgsConstructor
 public class AppointmentUpdateRequest {
     @NotNull
-    private long id;
+    private Long id;
 
     @NotNull
     private LocalDate appointmentDate;

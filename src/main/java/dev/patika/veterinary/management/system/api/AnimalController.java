@@ -41,7 +41,7 @@ public class AnimalController {
 
     @DeleteMapping("/{id}")
     @ResponseStatus(HttpStatus.OK)
-    public Result delete(@PathVariable ("id") long id){
+    public Result delete(@PathVariable ("id") Long id){
         boolean isDeleted =this.animalService.delete(id);
         if (isDeleted) {
             return ResultHelper.successResult();
@@ -68,11 +68,6 @@ public class AnimalController {
     public  ResultData<AnimalResponse> get (@PathVariable("id") long id){
         Animal animal= this.animalService.getById(id);
         return ResultHelper.success(this.modelMapperService.forResponse().map(animal,AnimalResponse.class));
-    }
-    @GetMapping
-    @ResponseStatus(HttpStatus.OK)
-    public List<Animal> getAllAnimals() {
-        return animalService.getAllAnimals();
     }
     @PutMapping()
     @ResponseStatus(HttpStatus.OK)

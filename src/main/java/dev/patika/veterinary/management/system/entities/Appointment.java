@@ -21,7 +21,7 @@ public class Appointment {
     @Id
     @GeneratedValue(strategy = GenerationType.IDENTITY)
     @Column(name="appointment_id",columnDefinition = "serial")
-    private long id;
+    private Long id;
 
     @Column(name ="appointment_date")
     @NotNull
@@ -32,13 +32,8 @@ public class Appointment {
     private Animal animal;
 
     @ManyToOne(fetch = FetchType.LAZY,cascade = CascadeType.MERGE)
-    @JoinColumn(name = "customer_id")
-    private Customer customer;
-
-    @ManyToOne(fetch = FetchType.LAZY,cascade = CascadeType.MERGE)
     @JoinColumn(name = "doctor_id")
     private Doctor doctor;
-
 
     @ManyToOne(fetch = FetchType.LAZY,cascade = CascadeType.MERGE)
     @JoinColumn(name="appointment_vaccine_id", referencedColumnName = "vaccine_id")

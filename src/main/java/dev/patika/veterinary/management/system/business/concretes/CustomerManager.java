@@ -37,10 +37,7 @@ public class CustomerManager  implements CustomerService {
         return this.customerRepo.save(customer);
     }
 
-    @Override
-    public List<Customer> getAllCustomers() {
-        return customerRepo.findAll();
-    }
+
 
     @Override
     public List<Customer> filterCustomersByName(String name) {

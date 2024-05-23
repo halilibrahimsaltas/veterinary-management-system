@@ -22,7 +22,7 @@ public class Animal {
     @Id
     @GeneratedValue(strategy = GenerationType.IDENTITY)
     @Column(name = "animal_id", columnDefinition = "serial")
-    private long id;
+    private Long id;
 
     @Column(name = "animal_name")
     @NotNull
@@ -48,13 +48,6 @@ public class Animal {
     @JoinColumn(name = "animal_customer_id", referencedColumnName = "customer_id")
     private Customer customer;
 
-    @ManyToMany(fetch = FetchType.LAZY, cascade = CascadeType.REMOVE)
-    @JoinTable(
-            name = "animal2appointment",
-            joinColumns = {@JoinColumn(name = "animal2appointment_animal_id")},
-            inverseJoinColumns = {@JoinColumn(name = "animal2appointment_appointment_id")}
-    )
-    private List<Appointment> appointmentList;
 
     @OneToMany(mappedBy = "animal", fetch = FetchType.LAZY, cascade = CascadeType.REMOVE)
     @JsonIgnore

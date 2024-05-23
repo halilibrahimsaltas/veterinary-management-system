@@ -4,8 +4,10 @@ import dev.patika.veterinary.management.system.business.abstracts.AppointmentSer
 import dev.patika.veterinary.management.system.core.exception.AppointmentException;
 import dev.patika.veterinary.management.system.core.exception.NotFoundException;
 import dev.patika.veterinary.management.system.core.utils.Msg;
+import dev.patika.veterinary.management.system.dao.AnimalRepo;
 import dev.patika.veterinary.management.system.dao.AppointmentRepo;
 import dev.patika.veterinary.management.system.dao.AvailableDateRepo;
+import dev.patika.veterinary.management.system.dao.DoctorRepo;
 import dev.patika.veterinary.management.system.entities.Animal;
 import dev.patika.veterinary.management.system.entities.Appointment;
 import dev.patika.veterinary.management.system.entities.AvailableDate;
@@ -22,13 +24,16 @@ import java.util.List;
 @Service
 public class AppointmentManager  implements AppointmentService {
 
-    private  final AppointmentRepo appointmentRepo;
-
+    private final AppointmentRepo appointmentRepo;
     private final AvailableDateRepo availableDateRepo;
+    private final DoctorRepo doctorRepo;
+    private final AnimalRepo animalRepo;
 
-    public AppointmentManager(AppointmentRepo appointmentRepo, AvailableDateRepo availableDateRepo) {
+    public AppointmentManager(AppointmentRepo appointmentRepo, AvailableDateRepo availableDateRepo, DoctorRepo doctorRepo, AnimalRepo animalRepo) {
         this.appointmentRepo = appointmentRepo;
         this.availableDateRepo = availableDateRepo;
+        this.doctorRepo = doctorRepo;
+        this.animalRepo = animalRepo;
     }
 
     @Override
@@ -47,7 +52,7 @@ public class AppointmentManager  implements AppointmentService {
         }
 
         List<Appointment> doctorAppointments = appointmentRepo.findByAppointmentDateBetweenAndDoctor(
-                appointmentDate.atStartOfDay(), appointmentDate.atTime(23, 59), doctor.getId());
+                appointmentDate.atStartOfDay(), appointmentDate.atTime(23, 59), doctor);
 
         for (Appointment existingAppointment : doctorAppointments) {
             if (existingAppointment.getAppointmentDate().isEqual(appointment.getAppointmentDate())) {
@@ -58,19 +63,18 @@ public class AppointmentManager  implements AppointmentService {
         return appointmentRepo.save(appointment);
     }
 
-    @Override
-    public List<Appointment> getAllAppointments() {
-        return appointmentRepo.findAll();
-    }
+
 
     @Override
     public List<Appointment> getAppointmentsByDateRangeAndDoctor(LocalDateTime startDate, LocalDateTime endDate, long doctorId) {
-        return appointmentRepo.findByAppointmentDateBetweenAndDoctor(startDate, endDate, doctorId);
+        Doctor doctor = doctorRepo.findById(doctorId).orElseThrow(() -> new NotFoundException("Doctor not found"));
+        return appointmentRepo.findByAppointmentDateBetweenAndDoctor(startDate, endDate, doctor);
     }
 
     @Override
     public List<Appointment> getAppointmentsByDateRangeAndAnimal(LocalDateTime startDate, LocalDateTime endDate, long animalId) {
-        return appointmentRepo.findByAppointmentDateBetweenAndAnimal(startDate, endDate, animalId);
+        Animal animal = animalRepo.findById(animalId).orElseThrow(() -> new NotFoundException("Animal not found"));
+        return appointmentRepo.findByAppointmentDateBetweenAndAnimal(startDate, endDate, animal);
     }
 
     @Override
@@ -103,7 +107,7 @@ public class AppointmentManager  implements AppointmentService {
 
         // Check if the doctor has another appointment at the given time
         List<Appointment> doctorAppointments = appointmentRepo.findByAppointmentDateBetweenAndDoctor(
-                appointmentDate.atStartOfDay(), appointmentDate.atTime(23, 59), doctor.getId());
+                appointmentDate.atStartOfDay(), appointmentDate.atTime(23, 59), doctor);
 
         for (Appointment existingAppointment : doctorAppointments) {
             if (existingAppointment.getAppointmentDate().isEqual(dateTime)) {

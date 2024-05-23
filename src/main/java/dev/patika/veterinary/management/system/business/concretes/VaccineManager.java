@@ -42,13 +42,10 @@ public class VaccineManager implements VaccineService {
         return vaccineRepo.save(vaccine);
     }
 
-    @Override
-    public List<Vaccine> getAllVaccines() {
-        return vaccineRepo.findAll();
-    }
+
 
     @Override
-    public List<Vaccine> getVaccinesByAnimalId(Long animalId) {
+    public List<Vaccine> getVaccinesByAnimalId(long animalId) {
         return vaccineRepo.findByAnimalId(animalId);
     }
 

@@ -11,7 +11,7 @@ import lombok.NoArgsConstructor;
 public class CustomerUpdateRequest {
 
     @NotNull
-    private  long id;
+    private  Long id;
 
     @NotNull
     private  String name;

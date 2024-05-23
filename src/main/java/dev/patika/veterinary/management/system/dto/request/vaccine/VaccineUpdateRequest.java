@@ -14,7 +14,7 @@ import java.time.LocalDate;
 public class VaccineUpdateRequest {
 
     @NotNull
-    private long id;
+    private Long id;
 
     @NotNull
     private  String name;

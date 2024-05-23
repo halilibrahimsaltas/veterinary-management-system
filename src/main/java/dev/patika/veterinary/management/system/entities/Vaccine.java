@@ -21,7 +21,7 @@ public class Vaccine {
     @Id
     @GeneratedValue(strategy = GenerationType.IDENTITY)
     @Column(name="vaccine_id",columnDefinition = "serial")
-    private long id;
+    private Long id;
 
     @Column(name ="vaccine_name")
     @NotNull

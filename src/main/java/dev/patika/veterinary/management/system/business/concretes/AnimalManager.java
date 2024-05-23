@@ -48,10 +48,6 @@ public class AnimalManager  implements AnimalService {
         return animalRepo.findByNameContainingIgnoreCase(name);
     }
 
-    @Override
-    public List<Animal> getAllAnimals() {
-        return animalRepo.findAll();
-    }
 
     @Override
     public Page<Animal> cursor(int page, int pageSize) {

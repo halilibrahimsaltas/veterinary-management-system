@@ -11,9 +11,8 @@ public interface VaccineService {
 
     Vaccine getById(long id);
     Vaccine save(Vaccine vaccine);
-    List<Vaccine> getAllVaccines();
 
-    List<Vaccine> getVaccinesByAnimalId(Long animalId);
+    List<Vaccine> getVaccinesByAnimalId(long animalId);
     List<Vaccine> getVaccinesByProtectionFinishDateRange(LocalDate startDate, LocalDate endDate);
     Vaccine update(Vaccine vaccine);
     Page<Vaccine> cursor(int page, int pageSize);

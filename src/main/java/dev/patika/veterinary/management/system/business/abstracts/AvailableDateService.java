@@ -7,7 +7,7 @@ import org.springframework.data.domain.Page;
 public interface AvailableDateService {
 
     AvailableDate getById(long id);
-    AvailableDate save(AvailableDate vailableDate);
+    AvailableDate save(AvailableDate availableDate);
     AvailableDate update(AvailableDate availableDate);
     Page<AvailableDate> cursor(int page, int pageSize);
     boolean delete(long id);

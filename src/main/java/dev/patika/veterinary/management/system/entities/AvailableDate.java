@@ -17,15 +17,14 @@ public class AvailableDate {
     @Id
     @GeneratedValue(strategy = GenerationType.IDENTITY)
     @Column(name="availableDate_id",columnDefinition = "serial")
-    private long id;
+    private Long id;
 
     @Column(name ="available_date")
     @NotNull
     private LocalDate availableDate;
 
-    @ManyToMany(mappedBy = "availableDateList",cascade = CascadeType.REMOVE)
-    @JsonIgnore
-    private List<Doctor> doctorList;
-
+    @ManyToOne
+    @JoinColumn(name = "doctor_id")
+    private Doctor doctor;
 
 }
