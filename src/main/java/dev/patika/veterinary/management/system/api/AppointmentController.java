@@ -152,9 +152,30 @@ public class AppointmentController {
     @GetMapping("/byDateRangeAndAnimal")
     @ResponseStatus(HttpStatus.OK)
     public ResultData<List<AppointmentResponse>> getAppointmentsByDateRangeAndAnimal(
-            @RequestParam LocalDateTime startDate, @RequestParam LocalDateTime endDate, @RequestParam long animalId) {
-        List<Appointment> appointments = appointmentService.getAppointmentsByDateRangeAndAnimal(startDate, endDate, animalId);
-        List<AppointmentResponse> appointmentResponses = appointments.stream().map(appointment -> modelMapperService.forResponse().map(appointment, AppointmentResponse.class)).toList();
+            @RequestParam("startDate") @DateTimeFormat(iso = DateTimeFormat.ISO.DATE_TIME) LocalDateTime startDate,
+            @RequestParam("endDate") @DateTimeFormat(iso = DateTimeFormat.ISO.DATE_TIME) LocalDateTime endDate ,
+            @RequestParam long animalId)
+
+    {
+
+        Animal animal = this.animalService.getById(animalId);
+        List<Appointment> appointments=this.appointmentService.getAppointmentsByDateRangeAndAnimal(startDate, endDate,animalId);
+        List<AppointmentResponse> appointmentResponses=appointments.stream()
+                .map(appointment -> {
+                    AppointmentResponse response = new AppointmentResponse();
+                    response.setId(appointment.getId());
+
+
+                    response.setAppointmentDate(appointment.getAppointmentDate());
+                    DoctorResponse doctorResponse=this.modelMapperService.forResponse().map(appointment.getDoctor(),DoctorResponse.class);
+                    AnimalResponse animalResponse=this.modelMapperService.forResponse().map(appointment.getAnimal(),AnimalResponse.class);
+                    response.setDoctorResponse(doctorResponse);
+                    response.setAnimalResponse(animalResponse);
+
+                    return response;
+                })
+                .collect(Collectors.toList());
+
         return ResultHelper.success(appointmentResponses);
     }
 

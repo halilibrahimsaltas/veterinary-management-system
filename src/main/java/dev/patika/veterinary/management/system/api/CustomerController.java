@@ -21,6 +21,7 @@ import org.springframework.http.HttpStatus;
 import org.springframework.web.bind.annotation.*;
 
 import java.util.List;
+import java.util.Optional;
 
 @RestController
 @RequestMapping("/v1/customers")
@@ -84,7 +85,7 @@ public class CustomerController {
 
     @GetMapping("/filter")
     public ResultData<List<CustomerResponse>> filterCustomersByName(@RequestParam String name) {
-        List<Customer> customers = customerService.filterCustomersByName(name);
+        Optional<Customer> customers = customerService.filterCustomersByName(name);
         List<CustomerResponse> customerResponses = customers.stream().map(customer -> modelMapperService.forResponse().map(customer, CustomerResponse.class)).toList();
         return ResultHelper.success(customerResponses);
     }

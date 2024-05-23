@@ -1,5 +1,6 @@
 package dev.patika.veterinary.management.system.api;
 
+import dev.patika.veterinary.management.system.business.abstracts.AnimalService;
 import dev.patika.veterinary.management.system.business.abstracts.VaccineService;
 import dev.patika.veterinary.management.system.core.config.modelMapper.ModelMapperService;
 import dev.patika.veterinary.management.system.core.result.Result;
@@ -20,12 +21,15 @@ import dev.patika.veterinary.management.system.entities.Doctor;
 import dev.patika.veterinary.management.system.entities.Vaccine;
 import jakarta.validation.Valid;
 import org.springframework.data.domain.Page;
+import org.springframework.data.domain.PageRequest;
+import org.springframework.format.annotation.DateTimeFormat;
 import org.springframework.http.HttpStatus;
 import org.springframework.web.bind.annotation.*;
 
 import java.time.LocalDate;
 import java.time.LocalDateTime;
 import java.util.List;
+import java.util.stream.Collectors;
 
 @RestController
 @RequestMapping("/v1/vaccines")
@@ -36,15 +40,21 @@ public class VaccineController {
 
     private  final ModelMapperService modelMapperService;
 
-    public VaccineController(VaccineService vaccineService, ModelMapperService modelMapperService) {
+    private  final AnimalService animalService;
+
+    public VaccineController(VaccineService vaccineService, ModelMapperService modelMapperService, AnimalService animalService) {
         this.vaccineService = vaccineService;
         this.modelMapperService = modelMapperService;
+        this.animalService = animalService;
     }
 
     @PostMapping()
     @ResponseStatus(HttpStatus.CREATED)
     public ResultData<VaccineResponse> save (@Valid @RequestBody VaccineSaveRequest vaccineSaveRequest){
-        Vaccine saveVaccine= this.modelMapperService.forRequest().map(vaccineSaveRequest,Vaccine.class);
+        Vaccine saveVaccine=this.modelMapperService.forRequest().map(vaccineSaveRequest,Vaccine.class);
+
+        Animal animal=this.animalService.getById(vaccineSaveRequest.getAnimalId());
+        saveVaccine.setAnimal(animal);
 
         this.vaccineService.save(saveVaccine);
         return ResultHelper.created(this.modelMapperService.forResponse().map(saveVaccine,VaccineResponse.class));
@@ -89,15 +99,22 @@ public class VaccineController {
     @ResponseStatus(HttpStatus.OK)
     public ResultData<List<VaccineResponse>> getVaccinesByAnimalId(@PathVariable long animalId) {
         List<Vaccine> vaccines = vaccineService.getVaccinesByAnimalId(animalId);
-        return ResultHelper.success(vaccines.stream().map(vaccine -> modelMapperService.forResponse().map(vaccine, VaccineResponse.class)).toList());
+        List<VaccineResponse> vaccineResponses = vaccines.stream()
+                .map(vaccine -> modelMapperService.forResponse().map(vaccine, VaccineResponse.class))
+                .collect(Collectors.toList());
+        return ResultHelper.success(vaccineResponses);
     }
 
     @GetMapping("/expiring")
     @ResponseStatus(HttpStatus.OK)
-    public ResultData<List<VaccineResponse>> getVaccinesByProtectionFinishDateRange
-            (@RequestParam LocalDate startDate, @RequestParam LocalDate endDate) {
-        List<Vaccine> vaccines = vaccineService.getVaccinesByProtectionFinishDateRange(startDate, endDate);
-        List<VaccineResponse> vaccineResponses = vaccines.stream().map(vaccine -> modelMapperService.forResponse().map(vaccine, VaccineResponse.class)).toList();
-        return ResultHelper.success(vaccineResponses);
+    public ResultData<List<AnimalResponse>> getVaccinesByProtectionFinishDateRange
+            (@RequestParam(name = "startDate") @DateTimeFormat(pattern = "yyyy-MM-dd") LocalDate startDate,
+             @RequestParam(name = "endDate") @DateTimeFormat(pattern = "yyyy-MM-dd") LocalDate endDate) {
+        List<Animal> animals = animalService.getAnimalsByVaccinationRange(startDate, endDate);
+
+        List<AnimalResponse> animalResponses = animals.stream()
+                .map(animal -> modelMapperService.forResponse().map(animal, AnimalResponse.class))
+                .collect(Collectors.toList());
+        return ResultHelper.success(animalResponses);
     }
 }

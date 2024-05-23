@@ -42,8 +42,7 @@ public class AppointmentManager  implements AppointmentService {
     }
 
     @Override
-    public Appointment save(Appointment appointment) throws AppointmentException {
-        Doctor doctor = appointment.getDoctor();
+    public Appointment save(Appointment appointment,Doctor doctor) throws AppointmentException {
         LocalDate appointmentDate = appointment.getAppointmentDate().toLocalDate();
 
         List<AvailableDate> availableDates = availableDateRepo.findByDoctorAndAvailableDate(doctor, appointmentDate);
