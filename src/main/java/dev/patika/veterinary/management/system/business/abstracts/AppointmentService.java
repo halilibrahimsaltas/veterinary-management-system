@@ -11,7 +11,7 @@ import java.util.List;
 
 public interface AppointmentService {
     Appointment getById(long id);
-    Appointment save(Appointment appointment);
+    Appointment save(Appointment appointment,Doctor doctor);
 
     List<Appointment> getAppointmentsByDateRangeAndDoctor(LocalDateTime startDate, LocalDateTime endDate, long doctorId );
 
@@ -21,4 +21,6 @@ public interface AppointmentService {
     boolean delete(long id);
 
     boolean isDoctorAvailable(Doctor doctor, LocalDateTime dateTime);
+
+    boolean hasAppointmentAtGivenTime(LocalDateTime date, Doctor doctor);
 }

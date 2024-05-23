@@ -117,4 +117,12 @@ public class AppointmentManager  implements AppointmentService {
 
         return true;
     }
+
+    @Override
+    public boolean hasAppointmentAtGivenTime(LocalDateTime date, Doctor doctor) {
+        List<Appointment> appointments = this.appointmentRepo.findByDoctorId(doctor.getId());
+
+        return appointments.stream()
+                .anyMatch(appointment -> appointment.getAppointmentDate().equals(date));
+    }
 }

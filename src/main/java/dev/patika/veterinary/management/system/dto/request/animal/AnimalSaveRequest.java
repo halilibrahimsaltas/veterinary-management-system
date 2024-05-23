@@ -15,7 +15,7 @@ public class AnimalSaveRequest {
 
     @NotNull
     private  String name;
-
+    @NotNull
     private  String species;
 
     private  String breed;
@@ -26,5 +26,7 @@ public class AnimalSaveRequest {
     private  String colour;
 
     private LocalDate dateOfBirth;
+
+    private  Long customerId;
 
 }

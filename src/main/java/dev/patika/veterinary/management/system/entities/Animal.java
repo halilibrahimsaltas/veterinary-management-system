@@ -1,12 +1,15 @@
 package dev.patika.veterinary.management.system.entities;
 
 
+import com.fasterxml.jackson.annotation.JsonBackReference;
 import com.fasterxml.jackson.annotation.JsonIgnore;
+import com.fasterxml.jackson.annotation.JsonManagedReference;
 import jakarta.persistence.*;
 import jakarta.validation.constraints.NotNull;
 import lombok.AllArgsConstructor;
 import lombok.Data;
 import lombok.NoArgsConstructor;
+import lombok.ToString;
 
 
 import java.time.LocalDate;
@@ -44,13 +47,18 @@ public class Animal {
     @Column(name = "animal_birth_date")
     private LocalDate dateOfBirth;
 
+
     @ManyToOne(fetch = FetchType.LAZY, cascade = CascadeType.MERGE)
     @JoinColumn(name = "animal_customer_id", referencedColumnName = "customer_id")
+    @JsonBackReference
     private Customer customer;
-
 
     @OneToMany(mappedBy = "animal", fetch = FetchType.LAZY, cascade = CascadeType.REMOVE)
     @JsonIgnore
     private List<Vaccine> vaccineList;
+
+    @OneToMany(mappedBy = "animal",cascade = CascadeType.REMOVE,fetch = FetchType.LAZY)
+    @JsonManagedReference
+    private List<Appointment> appointments;
 
 }

@@ -43,7 +43,6 @@ public class VaccineManager implements VaccineService {
     }
 
 
-
     @Override
     public List<Vaccine> getVaccinesByAnimalId(long animalId) {
         return vaccineRepo.findByAnimalId(animalId);

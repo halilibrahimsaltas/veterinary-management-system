@@ -16,4 +16,7 @@ public class AppointmentUpdateRequest {
 
     @NotNull
     private LocalDate appointmentDate;
+
+    private Long animal_id;
+    private Long doctorId;
 }

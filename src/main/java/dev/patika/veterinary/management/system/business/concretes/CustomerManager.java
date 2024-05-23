@@ -2,7 +2,9 @@ package dev.patika.veterinary.management.system.business.concretes;
 
 import dev.patika.veterinary.management.system.business.abstracts.CustomerService;
 import dev.patika.veterinary.management.system.core.exception.NotFoundException;
+import dev.patika.veterinary.management.system.dao.AnimalRepo;
 import dev.patika.veterinary.management.system.dao.CustomerRepo;
+import dev.patika.veterinary.management.system.entities.Animal;
 import dev.patika.veterinary.management.system.entities.Customer;
 import dev.patika.veterinary.management.system.core.utils.Msg;
 import org.springframework.data.domain.Page;
@@ -11,14 +13,19 @@ import org.springframework.data.domain.Pageable;
 import org.springframework.stereotype.Service;
 
 import java.util.List;
+import java.util.Optional;
 
 @Service
 public class CustomerManager  implements CustomerService {
 
     private  final CustomerRepo customerRepo;
 
-    public CustomerManager(CustomerRepo customerRepo) {
+    private final AnimalRepo animalRepo;
+
+
+    public CustomerManager(CustomerRepo customerRepo, AnimalRepo animalRepo) {
         this.customerRepo = customerRepo;
+        this.animalRepo = animalRepo;
     }
 
     @Override
@@ -38,9 +45,8 @@ public class CustomerManager  implements CustomerService {
     }
 
 
-
     @Override
-    public List<Customer> filterCustomersByName(String name) {
+    public Optional<Customer> filterCustomersByName(String name) {
         return customerRepo.findByNameContaining(name);
     }
 
@@ -56,5 +62,13 @@ public class CustomerManager  implements CustomerService {
         this.customerRepo.delete(customer);
         return true;
     }
+
+    @Override
+    public List<Animal> getAllAnimalsByCustomerId(Long customerId) {
+        Customer customer = this.customerRepo.findById(customerId)
+                .orElseThrow(() -> new RuntimeException( customerId + "NOT FOUND" ));
+        return this.animalRepo.findByCustomerId(customerId);
+    }
+
 
 }

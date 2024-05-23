@@ -1,6 +1,8 @@
 package dev.patika.veterinary.management.system.entities;
 
+import com.fasterxml.jackson.annotation.JsonBackReference;
 import com.fasterxml.jackson.annotation.JsonIgnore;
+import com.fasterxml.jackson.annotation.JsonManagedReference;
 import jakarta.persistence.*;
 import jakarta.validation.constraints.NotNull;
 import lombok.*;
@@ -36,9 +38,9 @@ public class Customer {
     @Column(name ="customer_city")
     private String city;
 
-    @OneToMany(mappedBy = "customer", fetch = FetchType.LAZY, cascade = CascadeType.REMOVE)
-    @JsonIgnore
-    private List<Animal> animalList;
+    @OneToMany(mappedBy = "customer", cascade = CascadeType.ALL)
+    @JsonManagedReference
+    private List<Animal> animals;
 
 
 }

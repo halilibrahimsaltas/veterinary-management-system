@@ -12,6 +12,9 @@ import org.springframework.data.domain.PageRequest;
 import org.springframework.data.domain.Pageable;
 import org.springframework.stereotype.Service;
 
+import java.time.LocalDate;
+import java.time.LocalDateTime;
+
 @Service
 public class DoctorManager  implements DoctorService {
 
@@ -48,5 +51,12 @@ public class DoctorManager  implements DoctorService {
         Doctor doctor= this.getById(id);
         this.doctorRepo.delete(doctor);
         return true;
+    }
+
+    @Override
+    public boolean isAvailable(LocalDateTime date, Doctor doctor) {
+        LocalDate appointmentDate = date.toLocalDate();
+        return doctor.getAvailableDates().contains(appointmentDate);
+
     }
 }

@@ -36,11 +36,8 @@ public class Vaccine {
     @NotNull
     private LocalDate protectionFinishDate;
 
-    @ManyToOne(fetch = FetchType.LAZY, cascade = CascadeType.MERGE)
+    @ManyToOne
     @JoinColumn(name = "vaccine_animal_id", referencedColumnName = "animal_id")
     private Animal animal;
 
-    @OneToMany(mappedBy = "vaccine",cascade = CascadeType.REMOVE)
-    @JsonIgnore
-    private List<Appointment> appointmentList;
 }

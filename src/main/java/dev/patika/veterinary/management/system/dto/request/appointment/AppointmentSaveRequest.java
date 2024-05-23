@@ -18,4 +18,9 @@ public class AppointmentSaveRequest {
     private LocalDate appointmentDate;
 
 
+    private Long animalId;
+
+    private Long doctorId;
+
+
 }

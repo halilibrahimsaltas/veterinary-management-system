@@ -1,5 +1,6 @@
 package dev.patika.veterinary.management.system.entities;
 
+import com.fasterxml.jackson.annotation.JsonBackReference;
 import com.fasterxml.jackson.annotation.JsonIgnore;
 import jakarta.persistence.*;
 import jakarta.validation.constraints.NotNull;
@@ -29,16 +30,13 @@ public class Appointment {
 
     @ManyToOne(fetch = FetchType.LAZY,cascade = CascadeType.MERGE)
     @JoinColumn(name = "animal_id")
+    @JsonBackReference
     private Animal animal;
 
     @ManyToOne(fetch = FetchType.LAZY,cascade = CascadeType.MERGE)
     @JoinColumn(name = "doctor_id")
+    @JsonBackReference
     private Doctor doctor;
-
-    @ManyToOne(fetch = FetchType.LAZY,cascade = CascadeType.MERGE)
-    @JoinColumn(name="appointment_vaccine_id", referencedColumnName = "vaccine_id")
-    private Vaccine vaccine;
-
 
 
 }

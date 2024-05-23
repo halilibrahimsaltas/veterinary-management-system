@@ -21,4 +21,7 @@ public class VaccineSaveRequest {
 
     @NotNull
     private LocalDate protectionFinishDate;
+
+    @NotNull
+    private long AnimalId;
 }
