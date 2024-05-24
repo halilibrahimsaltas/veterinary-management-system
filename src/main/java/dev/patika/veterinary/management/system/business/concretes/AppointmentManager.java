@@ -3,6 +3,7 @@ package dev.patika.veterinary.management.system.business.concretes;
 import dev.patika.veterinary.management.system.business.abstracts.AppointmentService;
 import dev.patika.veterinary.management.system.core.exception.AppointmentException;
 import dev.patika.veterinary.management.system.core.exception.NotFoundException;
+import dev.patika.veterinary.management.system.core.config.globalex.GlobalExceptionHandler;
 import dev.patika.veterinary.management.system.core.utils.Msg;
 import dev.patika.veterinary.management.system.dao.AnimalRepo;
 import dev.patika.veterinary.management.system.dao.AppointmentRepo;
@@ -42,21 +43,17 @@ public class AppointmentManager  implements AppointmentService {
     }
 
     @Override
-    public Appointment save(Appointment appointment,Doctor doctor) throws AppointmentException {
-        LocalDate appointmentDate = appointment.getAppointmentDate().toLocalDate();
+    public Appointment save(Appointment appointment,Doctor doctor) {
+        LocalDateTime appointmentDate = appointment.getAppointmentDate();
 
-        List<AvailableDate> availableDates = availableDateRepo.findByDoctorAndAvailableDate(doctor, appointmentDate);
-        if (availableDates.isEmpty()) {
-            throw new AppointmentException("The doctor is not working on this date!");
+
+        if (!this.isDoctorAvailable(doctor,appointmentDate)) {
+            throw new NotFoundException("The doctor is not working on this date!");
         }
 
-        List<Appointment> doctorAppointments = appointmentRepo.findByAppointmentDateBetweenAndDoctor(
-                appointmentDate.atStartOfDay(), appointmentDate.atTime(23, 59), doctor);
+        if(this.hasAppointmentAtGivenTime(appointmentDate,doctor)) {
+            throw new NotFoundException("Another appointment is available at the entered time.");
 
-        for (Appointment existingAppointment : doctorAppointments) {
-            if (existingAppointment.getAppointmentDate().isEqual(appointment.getAppointmentDate())) {
-                throw new AppointmentException("Another appointment is available at the entered time.");
-            }
         }
 
         return appointmentRepo.save(appointment);
@@ -97,31 +94,16 @@ public class AppointmentManager  implements AppointmentService {
     @Override
     public boolean isDoctorAvailable(Doctor doctor, LocalDateTime dateTime) {
         LocalDate appointmentDate = dateTime.toLocalDate();
+        List<AvailableDate> availableDates = availableDateRepo.findByDoctorId(doctor.getId());
 
-        // Check if the doctor is available on the given date
-        List<AvailableDate> availableDates = availableDateRepo.findByDoctorAndAvailableDate(doctor, appointmentDate);
-        if (availableDates.isEmpty()) {
-            return false;
-        }
-
-        // Check if the doctor has another appointment at the given time
-        List<Appointment> doctorAppointments = appointmentRepo.findByAppointmentDateBetweenAndDoctor(
-                appointmentDate.atStartOfDay(), appointmentDate.atTime(23, 59), doctor);
-
-        for (Appointment existingAppointment : doctorAppointments) {
-            if (existingAppointment.getAppointmentDate().isEqual(dateTime)) {
-                return false;
-            }
-        }
-
-        return true;
+        return availableDates.stream()
+                .anyMatch(availableDate -> availableDate.getAvailableDate().equals(appointmentDate));
     }
 
     @Override
     public boolean hasAppointmentAtGivenTime(LocalDateTime date, Doctor doctor) {
         List<Appointment> appointments = this.appointmentRepo.findByDoctorId(doctor.getId());
 
-        return appointments.stream()
-                .anyMatch(appointment -> appointment.getAppointmentDate().equals(date));
+        return appointments.stream().anyMatch(appointment -> appointment.getAppointmentDate().equals(date));
     }
 }

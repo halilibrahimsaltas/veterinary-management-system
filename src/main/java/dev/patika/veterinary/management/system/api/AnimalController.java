@@ -91,14 +91,14 @@ public class AnimalController {
 
     @GetMapping("/byOwner/{customerId}")
     @ResponseStatus(HttpStatus.OK)
-    public ResultData<List<AnimalResponse>> getAnimalsByOwnerId(@PathVariable long customerId) {
+    public ResultData<List<AnimalResponse>> getAnimalsByOwnerId(@PathVariable("customerId") long customerId) {
         List<Animal> animals = animalService.findByCustomerId(customerId);
         return ResultHelper.success(animals.stream().map(animal -> modelMapperService.forResponse().map(animal, AnimalResponse.class)).toList());
     }
 
-    @GetMapping("/filter")
+    @GetMapping("/byName/{name}")
     @ResponseStatus(HttpStatus.OK)
-    public ResultData<List<AnimalResponse>> filterAnimalsByName(@RequestParam String name) {
+    public ResultData<List<AnimalResponse>> filterAnimalsByName(@PathVariable("name") String name) {
         List<Animal> animals = animalService.filterAnimalsByName(name);
         List<AnimalResponse> animalResponses = animals.stream().map(animal -> modelMapperService.forResponse().map(animal, AnimalResponse.class)).toList();
         return ResultHelper.success(animalResponses);

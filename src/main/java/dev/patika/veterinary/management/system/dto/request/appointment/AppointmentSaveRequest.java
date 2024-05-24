@@ -7,6 +7,7 @@ import lombok.Data;
 import lombok.NoArgsConstructor;
 
 import java.time.LocalDate;
+import java.time.LocalDateTime;
 
 @Data
 @AllArgsConstructor
@@ -15,7 +16,7 @@ public class AppointmentSaveRequest {
 
 
     @NotNull
-    private LocalDate appointmentDate;
+    private LocalDateTime appointmentDate;
 
 
     private Long animalId;

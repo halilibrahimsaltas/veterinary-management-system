@@ -12,7 +12,7 @@ import java.util.List;
 @Repository
 public interface AppointmentRepo extends JpaRepository<Appointment, Long> {
 
-    List<Appointment> findByAnimal_Id(Long animal_id);
+    List<Appointment> findByAnimalId(Long animalId);
     List<Appointment> findByAppointmentDateBetweenAndDoctor(LocalDateTime startDate, LocalDateTime endDate, Doctor doctor);
 
     List<Appointment> findByDoctorId(Long doctorId);

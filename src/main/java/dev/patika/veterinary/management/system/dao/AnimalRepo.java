@@ -14,7 +14,6 @@ import java.util.List;
 public interface AnimalRepo extends JpaRepository<Animal, Long> {
     List<Animal> findByNameContainingIgnoreCase(String name);
     List<Animal> findByCustomerId(Long customerId);
-    List<Animal> findByVaccinesProtectionFinishDateBetween(LocalDate startDate, LocalDate endDate);
 
     @Query("SELECT a FROM Animal a LEFT JOIN FETCH a.customer WHERE a.id = :id")
     List<Animal> findByIdWithCustomer(@Param("id") long id);

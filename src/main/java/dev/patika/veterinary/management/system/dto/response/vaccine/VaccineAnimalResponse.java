@@ -1,6 +1,6 @@
-package dev.patika.veterinary.management.system.dto.request.vaccine;
+package dev.patika.veterinary.management.system.dto.response.vaccine;
 
-import jakarta.validation.constraints.NotNull;
+import dev.patika.veterinary.management.system.dto.response.animal.AnimalResponse;
 import lombok.AllArgsConstructor;
 import lombok.Data;
 import lombok.NoArgsConstructor;
@@ -10,18 +10,18 @@ import java.time.LocalDate;
 @Data
 @AllArgsConstructor
 @NoArgsConstructor
-public class VaccineSaveRequest {
-    @NotNull
+public class VaccineAnimalResponse {
+
+    private Long id;
+
     private  String name;
-    @NotNull
+
     private  String code;
 
-    @NotNull
     private LocalDate protectionStartDate;
 
-    @NotNull
     private LocalDate protectionFinishDate;
 
-    @NotNull
-    private long animalId;
+    private Long animalId;
+
 }

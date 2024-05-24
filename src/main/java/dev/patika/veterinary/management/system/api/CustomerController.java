@@ -22,6 +22,7 @@ import org.springframework.web.bind.annotation.*;
 
 import java.util.List;
 import java.util.Optional;
+import java.util.stream.Collectors;
 
 @RestController
 @RequestMapping("/v1/customers")
@@ -83,8 +84,20 @@ public class CustomerController {
         return ResultHelper.success(this.modelMapperService.forResponse().map(updateCustomer,CustomerResponse.class));
     }
 
-    @GetMapping("/filter")
-    public ResultData<List<CustomerResponse>> filterCustomersByName(@RequestParam String name) {
+    @GetMapping("/animals/{customerId}")
+    public ResultData<List<AnimalResponse>> getAnimalsByCustomerId(@PathVariable ("customerId")Long customerId) {
+        List<Animal> animals = customerService.getAllAnimalsByCustomerId(customerId);
+
+        List<AnimalResponse> animalResponses = animals.stream()
+                .map(animal -> modelMapperService.forResponse().map(animal, AnimalResponse.class))
+                .collect(Collectors.toList());
+
+        return ResultHelper.success(animalResponses);
+    }
+
+
+    @GetMapping("/filter/{name}")
+    public ResultData<List<CustomerResponse>> filterCustomersByName(@PathVariable("name") String name) {
         Optional<Customer> customers = customerService.filterCustomersByName(name);
         List<CustomerResponse> customerResponses = customers.stream().map(customer -> modelMapperService.forResponse().map(customer, CustomerResponse.class)).toList();
         return ResultHelper.success(customerResponses);

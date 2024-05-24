@@ -26,6 +26,7 @@ public class ResultHelper {
         return new Result(false,msg,"404");
     }
 
+
     public static <T> ResultData <CursorResponse<T>> cursor(Page<T> pageData){
         CursorResponse<T> cursor = new CursorResponse<>();
         cursor.setPageNumber(pageData.getNumber());

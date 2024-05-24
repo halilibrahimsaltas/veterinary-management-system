@@ -27,7 +27,7 @@ public class AnimalResponse {
 
     private LocalDate dateOfBirth;
 
-    private Customer customer;
+    private Long customerId;
 
 
 }

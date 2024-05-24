@@ -56,7 +56,9 @@ public class AppointmentController {
     @PostMapping
     @ResponseStatus(HttpStatus.CREATED)
     public ResultData<AppointmentResponse> save(@Valid @RequestBody AppointmentSaveRequest appointmentSaveRequest) {
+
         Appointment appointmentToSave = modelMapperService.forRequest().map(appointmentSaveRequest, Appointment.class);
+
         Animal animal = this.animalService.getById(appointmentSaveRequest.getAnimalId());
         Doctor doctor = this.doctorService.getById(appointmentSaveRequest.getDoctorId());
 
@@ -69,10 +71,6 @@ public class AppointmentController {
         this.appointmentService.save(appointmentToSave, doctor);
         AppointmentResponse response = this.modelMapperService.forResponse().map(appointmentToSave, AppointmentResponse.class);
 
-        // Check if the doctor is available at the requested time
-        if (!appointmentService.isDoctorAvailable(appointmentToSave.getDoctor(), appointmentToSave.getAppointmentDate())) {
-            throw new AppointmentException("The doctor is not available at the requested time.");
-        }
         response.setAnimalResponse(animalResponse);
         response.setDoctorResponse(doctorResponse);
         return ResultHelper.created(response);
@@ -114,11 +112,7 @@ public class AppointmentController {
     public ResultData<AppointmentResponse> update(@Valid @RequestBody AppointmentUpdateRequest appointmentUpdateRequest) {
         Appointment appointmentToUpdate = modelMapperService.forRequest().map(appointmentUpdateRequest, Appointment.class);
 
-        // Check if the doctor is available at the requested time
-        if (!appointmentService.isDoctorAvailable(appointmentToUpdate.getDoctor(), appointmentToUpdate.getAppointmentDate())) {
-            throw new AppointmentException("The doctor is not available at the requested time.");
-        }
-
+        this.appointmentService.update(appointmentToUpdate);
         Appointment updatedAppointment = appointmentService.update(appointmentToUpdate);
         return ResultHelper.success(modelMapperService.forResponse().map(updatedAppointment, AppointmentResponse.class));
     }

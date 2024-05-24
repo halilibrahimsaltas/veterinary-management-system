@@ -2,10 +2,13 @@ package dev.patika.veterinary.management.system.business.concretes;
 
 
 import dev.patika.veterinary.management.system.business.abstracts.VaccineService;
+import dev.patika.veterinary.management.system.core.config.modelMapper.ModelMapperService;
 import dev.patika.veterinary.management.system.core.exception.NotFoundException;
 import dev.patika.veterinary.management.system.core.exception.VaccineException;
 import dev.patika.veterinary.management.system.core.utils.Msg;
+import dev.patika.veterinary.management.system.dao.AnimalRepo;
 import dev.patika.veterinary.management.system.dao.VaccineRepo;
+import dev.patika.veterinary.management.system.dto.response.vaccine.VaccineAnimalResponse;
 import dev.patika.veterinary.management.system.entities.Doctor;
 import dev.patika.veterinary.management.system.entities.Vaccine;
 import org.springframework.data.domain.Page;
@@ -20,9 +23,14 @@ import java.util.List;
 public class VaccineManager implements VaccineService {
 
     private final VaccineRepo vaccineRepo;
+    private  final ModelMapperService modelMapperService;
 
-    public VaccineManager(VaccineRepo vaccineRepo) {
+    private  final AnimalRepo animalRepo;
+
+    public VaccineManager(VaccineRepo vaccineRepo, ModelMapperService modelMapperService, AnimalRepo animalRepo) {
         this.vaccineRepo = vaccineRepo;
+        this.modelMapperService = modelMapperService;
+        this.animalRepo = animalRepo;
     }
 
     @Override
@@ -42,15 +50,17 @@ public class VaccineManager implements VaccineService {
         return vaccineRepo.save(vaccine);
     }
 
-
     @Override
     public List<Vaccine> getVaccinesByAnimalId(long animalId) {
         return vaccineRepo.findByAnimalId(animalId);
     }
 
     @Override
-    public List<Vaccine> getVaccinesByProtectionFinishDateRange(LocalDate startDate, LocalDate endDate) {
-        return vaccineRepo.findByProtectionFinishDateBetween(startDate, endDate);
+    public List<VaccineAnimalResponse> getVaccinesByProtectionFinishDateRange(LocalDate startDate, LocalDate endDate) {
+        List<Vaccine> vaccineList = this.vaccineRepo.findByProtectionFinishDateBetween(startDate, endDate);
+        return vaccineList.stream()
+                .map(vaccine -> this.modelMapperService.forResponse()
+                        .map(vaccine, VaccineAnimalResponse.class)).toList();
     }
 
     @Override

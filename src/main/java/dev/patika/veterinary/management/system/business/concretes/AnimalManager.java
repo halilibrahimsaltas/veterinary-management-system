@@ -65,10 +65,7 @@ public class AnimalManager  implements AnimalService {
         return animalRepo.findByNameContainingIgnoreCase(name);
     }
 
-    @Override
-    public List<Animal> getAnimalsByVaccinationRange(LocalDate startDate, LocalDate endDate) {
-        return animalRepo.findByVaccinesProtectionFinishDateBetween(startDate, endDate);
-    }
+
 
 
     @Override

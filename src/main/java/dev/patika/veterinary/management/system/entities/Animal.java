@@ -54,7 +54,7 @@ public class Animal {
     private Customer customer;
 
     @OneToMany(mappedBy = "animal", fetch = FetchType.LAZY, cascade = CascadeType.REMOVE)
-    @JsonIgnore
+    @ToString.Exclude
     private List<Vaccine> vaccineList;
 
     @OneToMany(mappedBy = "animal",cascade = CascadeType.REMOVE,fetch = FetchType.LAZY)

@@ -10,5 +10,6 @@ import java.util.List;
 
 @Repository
 public interface AvailableDateRepo extends JpaRepository<AvailableDate, Long> {
-    List<AvailableDate> findByDoctorAndAvailableDate(Doctor doctor, LocalDate availableDate);
+
+    List<AvailableDate> findByDoctorId(Long doctorId);
 }

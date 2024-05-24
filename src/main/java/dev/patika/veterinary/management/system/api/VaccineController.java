@@ -14,6 +14,7 @@ import dev.patika.veterinary.management.system.dto.response.CursorResponse;
 import dev.patika.veterinary.management.system.dto.response.animal.AnimalResponse;
 import dev.patika.veterinary.management.system.dto.response.appointment.AppointmentResponse;
 import dev.patika.veterinary.management.system.dto.response.doctor.DoctorResponse;
+import dev.patika.veterinary.management.system.dto.response.vaccine.VaccineAnimalResponse;
 import dev.patika.veterinary.management.system.dto.response.vaccine.VaccineResponse;
 import dev.patika.veterinary.management.system.entities.Animal;
 import dev.patika.veterinary.management.system.entities.Appointment;
@@ -97,7 +98,7 @@ public class VaccineController {
 
     @GetMapping("/animal/{animalId}")
     @ResponseStatus(HttpStatus.OK)
-    public ResultData<List<VaccineResponse>> getVaccinesByAnimalId(@PathVariable long animalId) {
+    public ResultData<List<VaccineResponse>> getVaccinesByAnimalId(@PathVariable("animalId") long animalId) {
         List<Vaccine> vaccines = vaccineService.getVaccinesByAnimalId(animalId);
         List<VaccineResponse> vaccineResponses = vaccines.stream()
                 .map(vaccine -> modelMapperService.forResponse().map(vaccine, VaccineResponse.class))
@@ -107,14 +108,12 @@ public class VaccineController {
 
     @GetMapping("/expiring")
     @ResponseStatus(HttpStatus.OK)
-    public ResultData<List<AnimalResponse>> getVaccinesByProtectionFinishDateRange
+    public ResultData<List<VaccineAnimalResponse>> getVaccinesByProtectionFinishDateRange
             (@RequestParam(name = "startDate") @DateTimeFormat(pattern = "yyyy-MM-dd") LocalDate startDate,
              @RequestParam(name = "endDate") @DateTimeFormat(pattern = "yyyy-MM-dd") LocalDate endDate) {
-        List<Animal> animals = animalService.getAnimalsByVaccinationRange(startDate, endDate);
+        {
 
-        List<AnimalResponse> animalResponses = animals.stream()
-                .map(animal -> modelMapperService.forResponse().map(animal, AnimalResponse.class))
-                .collect(Collectors.toList());
-        return ResultHelper.success(animalResponses);
+            return ResultHelper.success(this.vaccineService.getVaccinesByProtectionFinishDateRange(startDate, endDate));
+        }
     }
 }
