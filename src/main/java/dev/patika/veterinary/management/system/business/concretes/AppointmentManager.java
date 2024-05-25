@@ -47,6 +47,11 @@ public class AppointmentManager  implements AppointmentService {
         LocalDateTime appointmentDate = appointment.getAppointmentDate();
 
 
+        if (appointmentDate.getMinute() != 0 || appointmentDate.getSecond() != 0) {
+            throw new RuntimeException("Appointments can only be made every hour!");
+        }
+
+
         if (!this.isDoctorAvailable(doctor,appointmentDate)) {
             throw new NotFoundException("The doctor is not working on this date!");
         }
