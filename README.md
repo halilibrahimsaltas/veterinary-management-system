@@ -130,6 +130,20 @@ This project contains a RESTful API that provides a veterinary clinic management
 | `PUT`       | `/v1/availableDates`                | update availabledate            |
 | `DELETE`    | `/v1/availableDates/{date_id}`      | delete availabledate            |
 
----
-### UML
-```
+### Setup
+
+1-Clone the project.
+2-git clone
+3-Configure the database in the src/main/resources/application.properties file.
+4-To get the project up and running, start from your idea.
+5-API can be used via Swagger. From your browser, go to http://localhost:8080/swagger-ui/index.html#/.
+6-You can send requests to end points.
+### Technologies Used
+-Java
+-Spring Boot
+-Spring Data JPA
+-PostgreSQL
+-Lombok
+-Swagger UI
+-Postman
+
