@@ -23,5 +23,4 @@ public class CustomerSaveRequest {
 
     private  String city;
 
-    private  Long customerId;
 }

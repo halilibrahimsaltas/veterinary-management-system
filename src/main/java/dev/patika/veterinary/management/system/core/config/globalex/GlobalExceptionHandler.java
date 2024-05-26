@@ -1,12 +1,15 @@
 package dev.patika.veterinary.management.system.core.config.globalex;
 
+import dev.patika.veterinary.management.system.core.exception.AppointmentException;
 import dev.patika.veterinary.management.system.core.exception.NotFoundException;
+import dev.patika.veterinary.management.system.core.exception.VaccineException;
 import dev.patika.veterinary.management.system.core.result.Result;
 import dev.patika.veterinary.management.system.core.result.ResultData;
 import dev.patika.veterinary.management.system.core.utils.ResultHelper;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 import org.springframework.validation.FieldError;
+import org.springframework.web.ErrorResponse;
 import org.springframework.web.bind.MethodArgumentNotValidException;
 import org.springframework.web.bind.annotation.ControllerAdvice;
 import org.springframework.web.bind.annotation.ExceptionHandler;
@@ -21,6 +24,19 @@ public class GlobalExceptionHandler {
     public  ResponseEntity<Result> handleNotFoundException(NotFoundException e){
         return new ResponseEntity<>(ResultHelper.notFoundError(e.getMessage()),HttpStatus.NOT_FOUND);
     }
+
+    @ExceptionHandler(AppointmentException.class)
+    public  ResponseEntity<Result> handleNotFoundException(AppointmentException e){
+        return new ResponseEntity<>(ResultHelper.badRequestError(e.getMessage()),HttpStatus.BAD_REQUEST);
+    }
+
+    @ExceptionHandler(VaccineException.class)
+    public  ResponseEntity<Result> handleNotFoundException(VaccineException e){
+        return new ResponseEntity<>(ResultHelper.badRequestError(e.getMessage()),HttpStatus.BAD_REQUEST);
+    }
+
+
+
     @ExceptionHandler(MethodArgumentNotValidException.class)
     public ResponseEntity<ResultData<List<String>>> handleValidationErrors(MethodArgumentNotValidException e){
 

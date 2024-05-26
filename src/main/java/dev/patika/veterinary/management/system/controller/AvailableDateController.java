@@ -4,6 +4,8 @@ package dev.patika.veterinary.management.system.controller;
 import dev.patika.veterinary.management.system.business.abstracts.AvailableDateService;
 import dev.patika.veterinary.management.system.business.abstracts.DoctorService;
 import dev.patika.veterinary.management.system.core.config.modelMapper.ModelMapperService;
+import dev.patika.veterinary.management.system.core.exception.AppointmentException;
+import dev.patika.veterinary.management.system.core.exception.NotFoundException;
 import dev.patika.veterinary.management.system.core.result.Result;
 import dev.patika.veterinary.management.system.core.result.ResultData;
 import dev.patika.veterinary.management.system.core.utils.ResultHelper;
@@ -39,13 +41,28 @@ public class AvailableDateController {
     @PostMapping()
     @ResponseStatus(HttpStatus.CREATED)
     public ResultData<AvailableDateResponse> save (@Valid @RequestBody AvailableDateSaveRequest availableDateSaveRequest){
-        AvailableDate saveDates=this.modelMapperService.forRequest().map(availableDateSaveRequest,AvailableDate.class);
-        Doctor doctor=this.doctorService.getById(availableDateSaveRequest.getDoctorId());
-        List<AvailableDate> dates=doctor.getAvailableDates();
-        dates.add(saveDates);
-        doctor.setAvailableDates(dates);
+        AvailableDate saveDates = this.modelMapperService.forRequest().map(availableDateSaveRequest, AvailableDate.class);
+        Doctor doctor = this.doctorService.getById(availableDateSaveRequest.getDoctorId());
+
+        // Check if the doctor already has the same date available
+        List<AvailableDate> existingDates = doctor.getAvailableDates();
+        boolean isDateAvailable = existingDates.stream()
+                .anyMatch(date -> date.getAvailableDate().isEqual(saveDates.getAvailableDate()));
+
+        if (isDateAvailable) {
+            // Throw an exception if the date is already available for the doctor
+            throw new AppointmentException("Doctor already has this date available");
+        }
+
+        // Add the new available date to the doctor's list
+        existingDates.add(saveDates);
+        doctor.setAvailableDates(existingDates);
         saveDates.setDoctor(doctor);
+
+        // Save the available date
         this.availableDateService.save(saveDates);
+
+        // Return the response with the saved available date details
         return ResultHelper.created(this.modelMapperService.forResponse().map(saveDates, AvailableDateResponse.class));
     }
 

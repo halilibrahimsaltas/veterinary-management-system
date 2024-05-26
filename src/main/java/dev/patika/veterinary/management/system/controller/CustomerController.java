@@ -105,6 +105,7 @@ public class CustomerController {
         Optional<Customer> customers = customerService.filterCustomersByName(name);
         // Map customer entities to their respective response objects
         List<CustomerResponse> customerResponses = customers.stream().map(customer -> modelMapperService.forResponse().map(customer, CustomerResponse.class)).toList();
+
         return ResultHelper.success(customerResponses);
     }
 }

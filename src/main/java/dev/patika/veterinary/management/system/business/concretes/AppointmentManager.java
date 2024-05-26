@@ -3,7 +3,6 @@ package dev.patika.veterinary.management.system.business.concretes;
 import dev.patika.veterinary.management.system.business.abstracts.AppointmentService;
 import dev.patika.veterinary.management.system.core.exception.AppointmentException;
 import dev.patika.veterinary.management.system.core.exception.NotFoundException;
-import dev.patika.veterinary.management.system.core.config.globalex.GlobalExceptionHandler;
 import dev.patika.veterinary.management.system.core.utils.Msg;
 import dev.patika.veterinary.management.system.dao.AnimalRepo;
 import dev.patika.veterinary.management.system.dao.AppointmentRepo;
@@ -48,16 +47,16 @@ public class AppointmentManager  implements AppointmentService {
 
 
         if (appointmentDate.getMinute() != 0 || appointmentDate.getSecond() != 0) {
-            throw new RuntimeException("Appointments can only be made every hour!");
+            throw new AppointmentException("Appointments can only be made every hour!");
         }
 
 
         if (!this.isDoctorAvailable(doctor,appointmentDate)) {
-            throw new NotFoundException("The doctor is not working on this date!");
+            throw new AppointmentException("The doctor is not working on this date!");
         }
 
         if(this.hasAppointmentAtGivenTime(appointmentDate,doctor)) {
-            throw new NotFoundException("Another appointment is available at the entered time.");
+            throw new AppointmentException("Another appointment is available at the entered time.");
 
         }
 
@@ -68,13 +67,13 @@ public class AppointmentManager  implements AppointmentService {
 
     @Override // Fetch appointments by date range and doctor ID
     public List<Appointment> getAppointmentsByDateRangeAndDoctor(LocalDateTime startDate, LocalDateTime endDate, long doctorId) {
-        Doctor doctor = doctorRepo.findById(doctorId).orElseThrow(() -> new NotFoundException("Doctor not found"));
+        Doctor doctor = doctorRepo.findById(doctorId).orElseThrow(() -> new AppointmentException("Doctor not found"));
         return appointmentRepo.findByAppointmentDateBetweenAndDoctor(startDate, endDate, doctor);
     }
 
     @Override // Fetch appointments by date range and animal ID
     public List<Appointment> getAppointmentsByDateRangeAndAnimal(LocalDateTime startDate, LocalDateTime endDate, long animalId) {
-        Animal animal = animalRepo.findById(animalId).orElseThrow(() -> new NotFoundException("Animal not found"));
+        Animal animal = animalRepo.findById(animalId).orElseThrow(() -> new AppointmentException("Animal not found"));
         return appointmentRepo.findByAppointmentDateBetweenAndAnimal(startDate, endDate, animal);
     }
 
