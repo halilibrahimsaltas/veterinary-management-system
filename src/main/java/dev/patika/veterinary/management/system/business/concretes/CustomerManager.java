@@ -47,6 +47,7 @@ public class CustomerManager  implements CustomerService {
 
     @Override
     public Optional<Customer> filterCustomersByName(String name) {
+        // Filter customers by name (case insensitive)
         return customerRepo.findByNameContaining(name);
     }
 

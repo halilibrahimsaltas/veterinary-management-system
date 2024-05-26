@@ -26,6 +26,7 @@ public class DoctorManager  implements DoctorService {
 
     @Override
     public Doctor getById(long id) {
+        // Fetch doctor by ID, throw NotFoundException if not found
         return this.doctorRepo.findById(id).orElseThrow(() -> new NotFoundException(Msg.NOT_FOUND));
     }
 

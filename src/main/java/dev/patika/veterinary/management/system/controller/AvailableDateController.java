@@ -1,4 +1,4 @@
-package dev.patika.veterinary.management.system.api;
+package dev.patika.veterinary.management.system.controller;
 
 
 import dev.patika.veterinary.management.system.business.abstracts.AvailableDateService;

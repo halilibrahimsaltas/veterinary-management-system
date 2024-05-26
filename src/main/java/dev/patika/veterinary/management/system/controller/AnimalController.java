@@ -1,4 +1,4 @@
-package dev.patika.veterinary.management.system.api;
+package dev.patika.veterinary.management.system.controller;
 
 import dev.patika.veterinary.management.system.business.abstracts.AnimalService;
 import dev.patika.veterinary.management.system.business.abstracts.CustomerService;
@@ -7,7 +7,6 @@ import dev.patika.veterinary.management.system.core.result.Result;
 import dev.patika.veterinary.management.system.core.result.ResultData;
 import dev.patika.veterinary.management.system.core.utils.Msg;
 import dev.patika.veterinary.management.system.core.utils.ResultHelper;
-import dev.patika.veterinary.management.system.dao.CustomerRepo;
 import dev.patika.veterinary.management.system.dto.request.animal.AnimalSaveRequest;
 import dev.patika.veterinary.management.system.dto.request.animal.AnimalUpdateRequest;
 import dev.patika.veterinary.management.system.dto.response.CursorResponse;
@@ -39,6 +38,7 @@ public class AnimalController {
         this.customerService = customerService;
     }
 
+    // Save Animal
     @PostMapping()
     @ResponseStatus(HttpStatus.CREATED)
     public ResultData<AnimalResponse> save(@Valid @RequestBody AnimalSaveRequest animalSaveRequest) {
@@ -74,6 +74,7 @@ public class AnimalController {
         return ResultHelper.cursor(animalResponsePage);
     }
 
+    // Get Animal by ID
     @GetMapping("/{id}")
     @ResponseStatus(HttpStatus.OK)
     public ResultData<AnimalResponse> get(@PathVariable("id") long id) {
@@ -81,6 +82,7 @@ public class AnimalController {
         return ResultHelper.success(this.modelMapperService.forResponse().map(animal, AnimalResponse.class));
     }
 
+    // Update Animal
     @PutMapping()
     @ResponseStatus(HttpStatus.OK)
     public ResultData<AnimalResponse> update(@Valid @RequestBody AnimalUpdateRequest animalUpdateRequest) {
@@ -89,6 +91,8 @@ public class AnimalController {
         return ResultHelper.success(this.modelMapperService.forResponse().map(updateAnimal, AnimalResponse.class));
     }
 
+
+    // Find Animals by Customer ID
     @GetMapping("/byOwner/{customerId}")
     @ResponseStatus(HttpStatus.OK)
     public ResultData<List<AnimalResponse>> getAnimalsByOwnerId(@PathVariable("customerId") long customerId) {
@@ -96,6 +100,7 @@ public class AnimalController {
         return ResultHelper.success(animals.stream().map(animal -> modelMapperService.forResponse().map(animal, AnimalResponse.class)).toList());
     }
 
+    // Filter Animals by Name
     @GetMapping("/byName/{name}")
     @ResponseStatus(HttpStatus.OK)
     public ResultData<List<AnimalResponse>> filterAnimalsByName(@PathVariable("name") String name) {

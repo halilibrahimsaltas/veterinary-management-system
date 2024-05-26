@@ -40,6 +40,7 @@ public class VaccineManager implements VaccineService {
 
     @Override
     public Vaccine save(Vaccine vaccine) throws VaccineException{
+        // Check if a similar vaccine is still in effect
         List<Vaccine> existingVaccines = vaccineRepo.findByAnimalId(vaccine.getAnimal().getId());
         for (Vaccine v : existingVaccines) {
             if (v.getName().equals(vaccine.getName()) && v.getCode().equals(vaccine.getCode()) &&
@@ -57,6 +58,7 @@ public class VaccineManager implements VaccineService {
 
     @Override
     public List<VaccineAnimalResponse> getVaccinesByProtectionFinishDateRange(LocalDate startDate, LocalDate endDate) {
+        // Fetch vaccines by protection finish date range and map to response
         List<Vaccine> vaccineList = this.vaccineRepo.findByProtectionFinishDateBetween(startDate, endDate);
         return vaccineList.stream()
                 .map(vaccine -> this.modelMapperService.forResponse()

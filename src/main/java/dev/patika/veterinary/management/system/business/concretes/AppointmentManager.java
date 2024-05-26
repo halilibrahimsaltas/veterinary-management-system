@@ -42,7 +42,7 @@ public class AppointmentManager  implements AppointmentService {
         return this.appointmentRepo.findById(id).orElseThrow(() -> new NotFoundException(Msg.NOT_FOUND));
     }
 
-    @Override
+    @Override// Validate the appointment time and doctor's availability
     public Appointment save(Appointment appointment,Doctor doctor) {
         LocalDateTime appointmentDate = appointment.getAppointmentDate();
 
@@ -66,13 +66,13 @@ public class AppointmentManager  implements AppointmentService {
 
 
 
-    @Override
+    @Override // Fetch appointments by date range and doctor ID
     public List<Appointment> getAppointmentsByDateRangeAndDoctor(LocalDateTime startDate, LocalDateTime endDate, long doctorId) {
         Doctor doctor = doctorRepo.findById(doctorId).orElseThrow(() -> new NotFoundException("Doctor not found"));
         return appointmentRepo.findByAppointmentDateBetweenAndDoctor(startDate, endDate, doctor);
     }
 
-    @Override
+    @Override // Fetch appointments by date range and animal ID
     public List<Appointment> getAppointmentsByDateRangeAndAnimal(LocalDateTime startDate, LocalDateTime endDate, long animalId) {
         Animal animal = animalRepo.findById(animalId).orElseThrow(() -> new NotFoundException("Animal not found"));
         return appointmentRepo.findByAppointmentDateBetweenAndAnimal(startDate, endDate, animal);
@@ -96,7 +96,7 @@ public class AppointmentManager  implements AppointmentService {
         this.appointmentRepo.delete(appointment);
         return true;
     }
-    @Override
+    @Override// Check if doctor is available on the given date
     public boolean isDoctorAvailable(Doctor doctor, LocalDateTime dateTime) {
         LocalDate appointmentDate = dateTime.toLocalDate();
         List<AvailableDate> availableDates = availableDateRepo.findByDoctorId(doctor.getId());
@@ -105,7 +105,7 @@ public class AppointmentManager  implements AppointmentService {
                 .anyMatch(availableDate -> availableDate.getAvailableDate().equals(appointmentDate));
     }
 
-    @Override
+    @Override// Check if there is already an appointment at the given time
     public boolean hasAppointmentAtGivenTime(LocalDateTime date, Doctor doctor) {
         List<Appointment> appointments = this.appointmentRepo.findByDoctorId(doctor.getId());
 

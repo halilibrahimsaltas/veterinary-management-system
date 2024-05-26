@@ -1,8 +1,7 @@
-package dev.patika.veterinary.management.system.api;
+package dev.patika.veterinary.management.system.controller;
 
 
 import dev.patika.veterinary.management.system.business.abstracts.CustomerService;
-import dev.patika.veterinary.management.system.business.concretes.CustomerManager;
 import dev.patika.veterinary.management.system.core.config.modelMapper.ModelMapperService;
 import dev.patika.veterinary.management.system.core.result.Result;
 import dev.patika.veterinary.management.system.core.result.ResultData;
@@ -84,10 +83,13 @@ public class CustomerController {
         return ResultHelper.success(this.modelMapperService.forResponse().map(updateCustomer,CustomerResponse.class));
     }
 
+    // Get animals by customer ID
     @GetMapping("/animals/{customerId}")
     public ResultData<List<AnimalResponse>> getAnimalsByCustomerId(@PathVariable ("customerId")Long customerId) {
+        // Retrieve all animals associated with the given customer ID
         List<Animal> animals = customerService.getAllAnimalsByCustomerId(customerId);
 
+        // Map animal entities to their respective response objects
         List<AnimalResponse> animalResponses = animals.stream()
                 .map(animal -> modelMapperService.forResponse().map(animal, AnimalResponse.class))
                 .collect(Collectors.toList());
@@ -96,9 +98,12 @@ public class CustomerController {
     }
 
 
+    // Filter customers by name
     @GetMapping("/filter/{name}")
     public ResultData<List<CustomerResponse>> filterCustomersByName(@PathVariable("name") String name) {
+        // Retrieve customers whose name contains the provided string
         Optional<Customer> customers = customerService.filterCustomersByName(name);
+        // Map customer entities to their respective response objects
         List<CustomerResponse> customerResponses = customers.stream().map(customer -> modelMapperService.forResponse().map(customer, CustomerResponse.class)).toList();
         return ResultHelper.success(customerResponses);
     }

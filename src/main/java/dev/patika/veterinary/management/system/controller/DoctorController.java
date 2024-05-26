@@ -1,18 +1,14 @@
-package dev.patika.veterinary.management.system.api;
+package dev.patika.veterinary.management.system.controller;
 
 import dev.patika.veterinary.management.system.business.abstracts.DoctorService;
 import dev.patika.veterinary.management.system.core.config.modelMapper.ModelMapperService;
 import dev.patika.veterinary.management.system.core.result.Result;
 import dev.patika.veterinary.management.system.core.result.ResultData;
 import dev.patika.veterinary.management.system.core.utils.ResultHelper;
-import dev.patika.veterinary.management.system.dto.request.animal.AnimalSaveRequest;
-import dev.patika.veterinary.management.system.dto.request.animal.AnimalUpdateRequest;
 import dev.patika.veterinary.management.system.dto.request.doctor.DoctorSaveRequest;
 import dev.patika.veterinary.management.system.dto.request.doctor.DoctorUpdateRequest;
 import dev.patika.veterinary.management.system.dto.response.CursorResponse;
-import dev.patika.veterinary.management.system.dto.response.animal.AnimalResponse;
 import dev.patika.veterinary.management.system.dto.response.doctor.DoctorResponse;
-import dev.patika.veterinary.management.system.entities.Animal;
 import dev.patika.veterinary.management.system.entities.Doctor;
 import jakarta.validation.Valid;
 import org.springframework.data.domain.Page;

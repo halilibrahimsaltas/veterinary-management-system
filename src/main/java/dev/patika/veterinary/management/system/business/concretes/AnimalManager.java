@@ -30,7 +30,7 @@ public class AnimalManager  implements AnimalService {
         this.customerRepo = customerRepo;
     }
 
-    @Override
+    @Override// Fetch the customer by ID and set the customer for the animal
     public Animal getById(long id) {
         List<Animal> animal = this.animalRepo.findByIdWithCustomer(id);
         return this.animalRepo.findById(id).orElseThrow(() -> new NotFoundException(Msg.NOT_FOUND));
@@ -46,7 +46,7 @@ public class AnimalManager  implements AnimalService {
         return this. animalRepo.save(animal);
     }
 
-    @Override
+    @Override// Check if the animal exists and update it
     public Animal update(Animal animal) {
         this.getById(animal.getId());
         Customer customer = customerRepo.findById(animal.getCustomer().getId())
@@ -55,12 +55,12 @@ public class AnimalManager  implements AnimalService {
         return this.animalRepo.save(animal);
     }
 
-    @Override
+    @Override // Find animals by customer ID
     public List<Animal> findByCustomerId(long ownerId) {
         return this.animalRepo.findByCustomerId(ownerId);
     }
 
-    @Override
+    @Override  // Filter animals by name (case insensitive)
     public List<Animal> filterAnimalsByName(String name) {
         return animalRepo.findByNameContainingIgnoreCase(name);
     }
